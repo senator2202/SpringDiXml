@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="windowBean" class="com.kharitonov.di.impl.PlasticWindow"/>
+
+    <bean id="brickBean" class="com.kharitonov.di.impl.Brick"/>
+    <bean id="woodBean" class="com.kharitonov.di.impl.Wood"/>
+
+    <bean id="outerDoor" class="com.kharitonov.di.impl.MetalDoor"/>
+    <bean id="innerDoor" class="com.kharitonov.di.impl.WoodenDoor" scope="prototype"/>
+
+    <bean id="houseBean" class="com.kharitonov.di.House">
+        <constructor-arg ref="windowBean"/>
+        <property name="height" value="3"/>
+        <property name="wall" ref="brickBean"/>
+        <property name="doors" >
+            <!--<list>
+                <ref bean="outerDoor"/>
+                <ref bean="innerDoor"/>
+            </list>-->
+            <map>
+                <entry key="A" value-ref="outerDoor"/>
+                <entry key="B" value-ref="innerDoor"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="mainWindowBean" class="com.kharitonov.di.MainWindow"
+          factory-method="getInstance" init-method="openConnection"
+          destroy-method="closeConnection"/>
+
+</beans>
