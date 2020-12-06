@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans.xsd">
+<beans  xmlns="http://www.springframework.org/schema/beans"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:aop = "http://www.springframework.org/schema/aop"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/aop
+   		http://www.springframework.org/schema/aop/spring-aop.xsd
+        ">
 
     <bean id="windowBean" class="com.kharitonov.di.impl.PlasticWindow"/>
 
@@ -11,6 +22,8 @@
 
     <bean id="outerDoor" class="com.kharitonov.di.impl.MetalDoor"/>
     <bean id="innerDoor" class="com.kharitonov.di.impl.WoodenDoor" scope="prototype"/>
+
+    <bean id="keySelector" class="com.kharitonov.di.KeySelector"/>
 
     <bean id="houseBean" class="com.kharitonov.di.House">
         <constructor-arg ref="windowBean"/>
@@ -22,8 +35,9 @@
                 <ref bean="innerDoor"/>
             </list>-->
             <map>
-                <entry key="A" value-ref="outerDoor"/>
-                <entry key="B" value-ref="innerDoor"/>
+                <entry key="#{keySelector.getKey(outerDoor)?.toUpperCase()}" value-ref="outerDoor"/>
+                <entry key="#{keySelector.getKey(innerDoor)?.toUpperCase()}" value-ref="innerDoor"/>
+                <entry key="#{systemEnvironment['JAVA_HOME']}" value-ref="innerDoor"/>
             </map>
         </property>
     </bean>
@@ -31,5 +45,26 @@
     <bean id="mainWindowBean" class="com.kharitonov.di.MainWindow"
           factory-method="getInstance" init-method="openConnection"
           destroy-method="closeConnection"/>
+
+    <util:list id="cities">
+        <bean class="com.kharitonov.di.City"
+              p:name="Chicago" p:state="IL" p:population="2853114"/>
+        <bean class="com.kharitonov.di.City"
+              p:name="Atlanta" p:state="GA" p:population="537958"/>
+        <bean class="com.kharitonov.di.City"
+              p:name="Dallas" p:state="TX" p:population="1279910"/>
+        <bean class="com.kharitonov.di.City"
+              p:name="Houston" p:state="TX" p:population="2242193"/>
+        <bean class="com.kharitonov.di.City"
+              p:name="Odessa" p:state="TX" p:population="90943"/>
+        <bean class="com.kharitonov.di.City"
+              p:name="El Paso" p:state="TX" p:population="613190"/>
+        <bean class="com.kharitonov.di.City"
+              p:name="Jal" p:state="NM" p:population="1996"/>
+        <bean class="com.kharitonov.di.City"
+              p:name="Las Cruces" p:state="NM" p:population="91865"/>
+    </util:list>
+
+    <util:properties id="jdbc" location="classpath:jdbc.properties"/>
 
 </beans>
